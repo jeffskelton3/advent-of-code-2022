@@ -5,7 +5,7 @@ import string
 INPUT_FILE_PATH = "./src/night-three.txt"
 
 
-def parse_input():
+def parse_compartments_from_input():
     with open(INPUT_FILE_PATH) as file:
         lines = file.readlines()
         collected_lines: list[Tuple[list[str], list[str]]] = []
@@ -17,6 +17,24 @@ def parse_input():
             second_half = sanitized_line[line_len // 2 :]
             collected_lines.append((list(first_half), list(second_half)))
 
+    return collected_lines
+
+
+def parse_groups_from_input():
+    with open(INPUT_FILE_PATH) as file:
+        lines = file.readlines()
+        collected_lines = []
+        sanitized_lines = list(map(lambda line: line.replace("\n", ""), lines))
+        current_group = []
+
+        for line in sanitized_lines:
+            if len(current_group) < 3:
+                current_group.append(list(line))
+            else:
+                collected_lines.append(current_group)
+                current_group = [list(line)]
+
+        collected_lines.append(current_group)
     return collected_lines
 
 
@@ -35,14 +53,27 @@ def find_common_elements_in_lists(list1, list2):
 
 
 priority_lookup_table = build_priorty_lookup_table()
+compartments = parse_compartments_from_input()
+groups = parse_groups_from_input()
 
-input: list[Tuple[list[str], list[str]]] = parse_input()
 
-priority_scores = []
+def find_common_items_in_groups():
+    priority_scores = []
+    for group in groups:
+        common = list(set(group[0]) & set(group[1]) & set(group[2]))
+        for c in common:
+            priority_scores.append(priority_lookup_table[c])
+    return priority_scores
 
-for item in input:
-    common = find_common_elements_in_lists(item[0], item[1])
-    for c in common:
-        priority_scores.append(priority_lookup_table[c])
 
-print(sum(priority_scores))
+def find_common_items_in_compartments():
+    priority_scores = []
+    for item in compartments:
+        common = find_common_elements_in_lists(item[0], item[1])
+        for c in common:
+            priority_scores.append(priority_lookup_table[c])
+    return priority_scores
+
+
+# print(sum(find_common_items_in_compartments()))
+print(sum(find_common_items_in_groups()))
