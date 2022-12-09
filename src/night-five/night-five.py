@@ -26,8 +26,7 @@ def parse_box_values(box_rows):
 
     for current_row in box_rows:
         n = 4
-        columns = [(current_row[i: i + n])
-                   for i in range(0, len(current_row), n)]
+        columns = [(current_row[i : i + n]) for i in range(0, len(current_row), n)]
 
         for i in range(len(columns)):
             col = columns[i].replace("]", "").replace("[", "").replace(" ", "")
@@ -92,4 +91,36 @@ def main():
     return boxes
 
 
-print(json.dumps(main(), indent=4))
+def cratemover():
+    data = parse_input()
+    moves = data["moves"]
+    boxes = data["boxes"]
+
+    for move in moves:
+        quantity: int = move["quantity"]
+        move_from: int = move["from"]
+        move_to: int = move["to"]
+
+        from_box_column: list[str] = boxes[f"{move_from}"]
+        to_box_column = boxes[f"{move_to}"]
+
+        removed_from_from_box_column = []
+        rest_of_from_box_column = []
+        for i in range(len(from_box_column)):
+            if i < quantity:
+                removed_from_from_box_column.append(from_box_column[i])
+            else:
+                rest_of_from_box_column.append(from_box_column[i])
+
+        boxes[f"{move_from}"] = rest_of_from_box_column
+        boxes[f"{move_to}"] = removed_from_from_box_column + to_box_column
+
+    top_letters = {}
+    for key in boxes:
+        top_letters[key] = boxes[key][0]
+
+    # return "".join(top_letters)
+    return top_letters
+
+
+print(cratemover())
