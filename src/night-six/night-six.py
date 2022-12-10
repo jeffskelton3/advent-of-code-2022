@@ -10,14 +10,15 @@ def parse_input():
 
 
 chars = parse_input()
+char_len = len(chars)
+START_OF_MARKER = 14
 count = 0
-for i in range(len(chars)):
-    count = count + 1
-    one = chars[i]
-    two = chars[i + 1] if len(chars) > i + 1 else None
-    three = chars[i + 2] if len(chars) > i + 2 else None
-    four = chars[i + 3] if len(chars) > i + 3 else None
-    chunk = {one, two, three, four}
-    if len(chunk) == 4:
-        print(count + 3)
-        break
+for i in range(char_len):
+    if START_OF_MARKER < i < char_len + START_OF_MARKER:
+        chunk = []
+        for r in range(0, START_OF_MARKER):
+            chunk.insert(0, chars[i - r])
+        deduped_chunk_len = len(set(chunk))
+        if deduped_chunk_len == 14:
+            print(i + 1)
+            break
